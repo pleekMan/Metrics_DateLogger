@@ -33,7 +33,7 @@ public class Main extends PApplet {
 	public void draw() {
 		background(50);
 		//drawBackLines();
-		//drawMouseCoordinates();
+		drawMouseCoordinates();
 		
 		logger.showEvents();
 		
@@ -98,6 +98,10 @@ public class Main extends PApplet {
 
 	public void mouseMoved() {
 
+	}
+	
+	public void controlEvent(ControlEvent event) {
+		logger.controlEvent(event);
 	}
 	
 

@@ -1,6 +1,7 @@
 package dateLogger;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 //import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -9,7 +10,9 @@ import java.text.SimpleDateFormat;
 import controlP5.*;
 
 import oscP5.*;
+import processing.core.PFont;
 
+@SuppressWarnings("static-access")
 public class Logger {
 
 	Main p5;
@@ -27,9 +30,10 @@ public class Logger {
 	int consoleX, consoleY;
 
 	public ControlP5 gui;
-	public Textarea consoleTextArea;
-	public Println console;
-	public Button button;
+	//public Textarea consoleTextArea;
+	//public Println console;
+	public Button buttonClear;
+	public Textfield nameText;
 
 	public Logger() {
 		p5 = getP5();
@@ -44,18 +48,11 @@ public class Logger {
 		
 		initialize();
 
+		PFont font = p5.createFont("arial",15);
 
-		/*
-		 * gui = new ControlP5(p5); consoleTextArea = gui.addTextarea(
-		 * "---|| STATUS ") .setPosition(20, 50) .setSize(450, 80)
-		 * .setFont(p5.createFont("", 10)) .setLineHeight(14)
-		 * .setColor(p5.color(200,200,0)) .setColorBackground(p5.color(255,
-		 * 100)) .setColorForeground(p5.color(255, 100,0));
-		 * 
-		 * console = gui.addConsole(consoleTextArea); console.setMax(10);
-		 * 
-		 * button = gui.addButton("BOTON");
-		 */
+		gui = new ControlP5(p5);
+		buttonClear = gui.addButton("clearLog").setPosition(390, 50).setSize(100, 20).setLabel("Resetear archivo");
+		nameText = gui.addTextfield("nameText").setPosition(350, 73).setSize(140, 20).setLabel("Nombre del Archivo").setFont(font);
 
 	}
 
@@ -160,7 +157,7 @@ public class Logger {
 	private void createDataFile() {
 		logWriter = p5.createWriter(filePath);
 		try{
-			logName = p5.loadStrings("data/stats/nombre.txt")[0];
+			logName = p5.loadStrings("data/stats/info.txt")[0];
 		} catch (Exception e){
 			logName = "No Name " + dateFormat.format(appInitDate);
 		}
@@ -199,6 +196,36 @@ public class Logger {
 		logWriter.flush();
 
 	}
+	
+	private void eraseData(){
+		
+		PrintWriter eraserLogWriter;
+		try {
+			
+			// NAME REPLACER
+			changeName(gui.get(Textfield.class,"nameText").getText());
+			
+			eraserLogWriter = new PrintWriter(filePath);
+			eraserLogWriter.println(logName);
+			eraserLogWriter.close();
+			addToEventConsole("LogFile Reseted // Name: " + logName);
+		} catch (Exception e) {
+			addToEventConsole("Could not Reset LogFile");
+			//e.printStackTrace();
+		}
+		
+
+	}
+	
+	private void changeName(String newName){
+		//String newName = new String(logName);
+		if (!newName.equals("")) {
+			newName = gui.get(Textfield.class,"nameText").getText();
+			logName = newName;
+			gui.get(Textfield.class,"nameText").clear();
+
+		}
+	}
 
 	public PrintWriter getLogWriter() {
 		return logWriter;
@@ -206,6 +233,17 @@ public class Logger {
 
 	public void closeLog() {
 		logWriter.close();
+	}
+	
+	public void controlEvent(ControlEvent event) {
+		//p5.println("Boton Apretado");
+
+		if (event.isFrom("clearLog")) eraseData();
+		
+		if(event.isFrom("nameText")){
+			changeName(gui.get(Textfield.class,"nameText").getText());
+		}
+
 	}
 
 	protected Main getP5() {

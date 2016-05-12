@@ -1,3 +1,0 @@
-
-dateLogger.Main
-Main.jar
