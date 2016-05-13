@@ -101,7 +101,7 @@ public class Main extends PApplet {
 	}
 	
 	public void controlEvent(ControlEvent event) {
-		logger.controlEvent(event);
+		logger.guiControlEvent(event);
 	}
 	
 
